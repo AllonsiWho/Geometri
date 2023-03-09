@@ -1,268 +1,330 @@
-﻿// Geometri.cpp 
-
-#define delimetr "\n---------------------------------------------------\n"
-
-#include <iostream>
-#include <locale.h>
+﻿#define _USE_MATH_DEFINES
 #include<Windows.h>
-
+#include<iostream>
 using namespace std;
-namespace Geometry{
-enum Color {
-	/*Black = 0, Blue, Green, Cyan, Red, Magenta, Brown, LightGray, DarkGray, LightBlue,
-	LightGreen, LightCyan, LightRed, LightMagenta, Yellow, White*/
-	red=0x000000FF,
-	green=0x0000FF00,
-	blue=0x00FF0000,
-	yellow=0x0000FFFF,
-	white=0x00FFFFFF
-};
 
+#define delimiter "\n----------------------------------------\n"
 
-void SetColor(Color text, Color background)
+namespace Geometry
 {
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);//получает дискриптор активного окна
-	SetConsoleTextAttribute(hStdOut, (WORD)((background << 4) | text));
-}
-void SetCursor(int x, int y)
-{
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);//получает дискриптор активного окна
-	COORD myCoords = { x,y };//инициализируем передаваемыми значениями объект координат
-	SetConsoleCursorPosition(hStdOut, myCoords);
-}
+	enum Color
+	{
+		red = 0x000000FF,
+		green = 0x0000FF00,
+		blue = 0x00FF0000,
+		yellow = 0x0000FFFF,
+		white = 0x00FFFFFF,
 
-
-class Shape
-{
-protected:
-	Color color;
-	int start_x;
-	int start_y;
-	int line_width;
-public:
-	int get_start_x()const
-	{
-		return start_x;
-	}
-	int get_start_y()const
-	{
-		return start_y;
-	}
-	int get_line_width()const
-	{
-		return line_width;
-	}
-	void set_start_x(int start_x)
-	{
-		if (start_x < 10)start_x = 10;
-		if (start_x > 500)start_x = 500;
-		this->start_x = start_x;
-	}
-	void set_start_y(int start_y)
-	{
-		if (start_y < 10)start_y = 10;
-		if (start_y > 500)start_y = 500;
-		this->start_x = start_y;
-	}
-	void set_line_width(int line_width)
-	{
-		if (line_width < 5)line_width = 5;
-		if (line_width > 20)line_width = 20;
-		this->line_width = line_width;
-	}
-	Shape(Color color,int start_x,int start_y,int line_width) :color(color) 
-	{
-			
+		console_blue = 0x99,
+		console_green = 0xAA,
+		console_red = 0xCC,
+		console_default = 0x07
 	};
-	~Shape() {}
-	virtual double get_area()const = 0;
-	virtual double get_perimetr()const = 0;
-	virtual void draw()const = 0;
+	//enum (Enumeration - Перечисление) - это набор именованных констант типа 'int'
 
-	virtual void info()const
+	class Shape
 	{
-		cout << "Площадь фигуры= " << get_area() << endl;
-		cout << "Периметр фигуры= " << get_perimetr() << endl;
-		draw();
-
-	}
-};
-
-//class Square : public Shape
-//{
-//	double side;
-//public:
-//	double get_side()const
-//	{
-//		return side;
-//	}
-//	void set_side(double side)
-//	{
-//		if (side < 5)side = 5;
-//		if (side > 20)side = 20;
-//		this->side = side;
-//	}
-//
-//	// Constructors
-//	Square(double side, Color color) : Shape(color)
-//	{
-//		set_side(side);
-//		
-//	}
-//	~Square()
-//	{
-//
-//	}
-//	
-//	double get_area()const override
-//	{
-//		
-//		return side * side;
-//	}
-//
-//	double get_perimetr()const override
-//	{
-//		cout << "Периметр квадрата= " << side * 4 << endl;
-//		return 4 * side;
-//	}
-//	void draw()const override
-//	{
-//		for (int i = 0; i < side; i++)
-//		{
-//			for (int j = 0; j < side; j++)
-//			{
-//				//SetColor(color,color);
-//				cout << "# ";
-//				//SetColor(White, Black);
-//			}
-//			cout << endl;
-//		}
-//	}
-//	void info()const
-//	{
-//		cout << typeid(*this).name() << endl;
-//		cout << "Длина стороны квадрата= " << side << endl;
-//		Shape::info();
-//	}
-//};
-class Rectangle :public Shape
-{
-	double side1, side2;
-public:
-	double get_side_1()const
-	{
-		return side1;
-	}
-	double get_side_2()const
-	{
-		return side2;
-	}
-	void set_side_1(double side1)
-	{
-		if (side1 < 5)side1 = 5;
-		if (side1 > 20)side1 = 20;
-		this->side1 = side1;
-	}
-	void set_side_2(double side2)
-	{
-		if (side2 < 5)side2 = 5;
-		if (side2 > 20)side2 = 20;
-		this->side2 = side2;
-	}
-	Rectangle(double side1, double side2, Color color) :Shape(color)
-	{
-		set_side_1(side1);
-		set_side_2(side2);
-	}
-	~Rectangle(){}
-
-	double get_area()const override
-	{
-		return side1 * side2;
-	}
-	double get_perimetr()const override
-	{
-		return(side1 + side2) * 2;
-	}
-	void draw()const override
-	{
-		/*for (int i = 0; i < side1; i++)
+	protected:
+		Color color;
+		int start_x;
+		int start_y;
+		int line_width;
+	public:
+		int get_start_x()const
 		{
-			for (int j = 0; j < side2; j++)
-			{
-				SetColor(color, color);
-				cout << "# ";
-				SetColor(White, Black);
-			}
-			cout << endl;
-		}*/
+			return start_x;
+		}
+		int get_start_y()const
+		{
+			return start_y;
+		}
+		int get_line_width()const
+		{
+			return line_width;
+		}
+		void set_start_x(int start_x)
+		{
+			if (start_x < 10)start_x = 10;
+			if (start_x > 1000)start_x = 1000;
+			this->start_x = start_x;
+		}
+		void set_start_y(int start_y)
+		{
+			if (start_y < 10)start_y = 10;
+			if (start_y > 500)start_y = 500;
+			this->start_y = start_y;
+		}
+		void set_line_width(int line_width)
+		{
+			if (line_width < 5)line_width = 5;
+			if (line_width > 20)line_width = 20;
+			this->line_width = line_width;
+		}
 
-		HWND hwnd = GetConsoleWindow();//Получаем обработчик окна консоли
-		HDC hdc = GetDC(hwnd);//Получаем контекс устройства окна устрофства
-		//Контекс устройства - это тоб на чем будем рисовать
-		HPEN hPen = CreatePen(PS_SOLID, 5, color);
-		//Pen(Карандаш) рисует контур фигуры,
-		//Ps_SOLID-сплошная линия
-		//5- толщина линии 5 пикселов
+		Shape(Color color, int start_x, int start_y, int line_width) :color(color)
+		{
+			set_start_x(start_x);
+			set_start_y(start_y);
+			set_line_width(line_width);
+			this;
+		}
+		virtual ~Shape() {}
 
-		HBRUSH hBrush = CreateSolidBrush(color);
-		//Brush - это кисть, рисует заливку замкнутой фигуры.
+		virtual double get_area()const = 0;
+		virtual double get_perimeter()const = 0;
+		virtual void draw()const = 0;
+		virtual void info()const
+		{
+			cout << "Площадь фигуры: " << get_area() << endl;
+			cout << "Периметр фигуры: " << get_perimeter() << endl;
+			draw();
+		}
+	};
 
-		//Выбираем чем и на чем рисовать
-		SelectObject(hdc,hPen);
-		SelectObject(hdc,hBrush);
-		//Когда все инструменты созданы и выбраны, можно вызвать функцию,
-		//для рисования нужно фигуры
-		::Rectangle(hdc, 300, 100, 600, 300);
-
-
-
-		DeleteObject(hPen);
-		DeleteObject(hBrush);
-
-
-
-		ReleaseDC(hwnd, hdc);//Освыобождаем контекст устройства
-	}
-	void info()const
+	/*class Square :public Shape
 	{
-		cout << typeid(*this).name() << endl;
-		cout << "Сторона 1: " << side1 << endl;
-		cout << "Сторона 2: " << side2 << endl;
-		Shape::info();
-	}
+		double side;
+	public:
+		double get_side()const
+		{
+			return side;
+		}
+		void set_side(double side)
+		{
+			if (side > 20)side = 20;
+			if (side < 5)side = 5;
+			this->side = side;
+		}
+		//					Constructors:
+		Square(double side, Color color) :Shape(color)
+		{
+			set_side(side);
+		}
+		~Square() {}
+		double get_area()const override
+		{
+			return side * side;
+		}
+		double get_perimeter()const override
+		{
+			return side * 4;
+		}
+		void draw()const override
+		{
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, color);
+			for (int i = 0; i < side; i++)
+			{
+				for (int j = 0; j < side; j++)
+				{
+					cout << "* ";
+				}
+				cout << endl;
+			}
+			SetConsoleTextAttribute(hConsole, Color::console_default);
+		}
+		void info()const
+		{
+			cout << typeid(*this).name() << endl;
+			cout << "Длина стороны квадрата: " << side << endl;
+			Shape::info();
+		}
+	};*/
 
-}; 
-class Square :Rectangle
-{
-public:
-	Square(double side, Color color) :Rectangle(side, side, color) {}
+	class Rectangle :public Shape
+	{
+		double side_1, side_2;
+	public:
+		double get_side_1()const
+		{
+			return side_1;
+		}
+		double get_side_2()const
+		{
+			return side_2;
+		}
+		void set_side_1(double side_1)
+		{
+			if (side_1 < 50)side_1 = 50;
+			if (side_1 > 550)side_1 = 550;
+			this->side_1 = side_1;
+		}
+		void set_side_2(double side_2)
+		{
+			if (side_2 < 50)side_2 = 50;
+			if (side_2 > 550)side_2 = 550;
+			this->side_2 = side_2;
+		}
+		Rectangle(double side_1, double side_2, Color color, int start_x, int start_y, int line_width)
+			:Shape(color, start_x, start_y, line_width)
+		{
+			set_side_1(side_1);
+			set_side_2(side_2);
+		}
+		~Rectangle() {}
 
-	~Square(){}
+		double get_area()const override
+		{
+			return side_1 * side_2;
+		}
+		double get_perimeter()const override
+		{
+			return (side_1 + side_2) * 2;
+		}
+		void draw()const
+		{
+			/*HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, color);
+			for (int i = 0; i < side_1; i++)
+			{
+				for (int j = 0; j < side_2; j++)
+				{
+					cout << "* ";
+				}
+				cout << endl;
+			}
+			SetConsoleTextAttribute(hConsole, Color::console_default);*/
 
+			HWND hwnd = GetConsoleWindow();	//Получаем обработчик окна консоли
+			HDC hdc = GetDC(hwnd);	//Получаем контекст усройства окна косоли
+			//Контекст устройства - это то, на чем мы будем рисовать
 
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			//Pen (карандаш) рисут контур фигуры,
+			//PS_SOLID - сплошная линия
+			//5 - толщина линии 5 пикселов
 
+			HBRUSH hBrush = CreateSolidBrush(color);
+			//Brush - это кисть, рисует заливку замкнутой фигуры.
 
-};
+			//Выбираем чем и на чем рисовать:
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
 
+			//Когда все инфстументы созданы и выбраны, можно вызывать функцию,
+			//для рисования нужно фигуры:
 
+			::Rectangle(hdc, start_x, start_y, start_x + side_1, start_y + side_2);
 
+			DeleteObject(hPen);
+			DeleteObject(hBrush);
+			ReleaseDC(hwnd, hdc);	//Освобождаем контекст устройства
+		}
+
+		void info()const
+		{
+			cout << typeid(*this).name() << endl;
+			cout << "Сторона 1: " << side_1 << endl;
+			cout << "Сторона 2: " << side_2 << endl;
+			Shape::info();
+		}
+	};
+
+	class Square :public Rectangle
+	{
+	public:
+		Square(double side, Color color, int start_x, int start_y, int line_width)
+			:Rectangle(side, side, color, start_x, start_y, line_width) {}
+		~Square() {}
+	};
+
+	class Circle :public Shape
+	{
+		double radius;
+	public:
+		double get_radius()const
+		{
+			return radius;
+		}
+		void set_radius(double radius)
+		{
+			if (radius < 50)radius = 50;
+			if (radius > 550)radius = 550;
+			this->radius = radius;
+		}
+		Circle(double radius, Color color, int start_x, int start_y, int line_width)
+			:Shape(color, start_x, start_y, line_width)
+		{
+			set_radius(radius);
+		}
+		~Circle() {}
+		double get_area()const override
+		{
+			return M_PI * radius * radius;
+		}
+		double get_perimeter()const override
+		{
+			return 2 * M_PI * radius;
+		}
+		void draw()const override
+		{
+			HWND hwnd = GetConsoleWindow();
+			HDC hdc = GetDC(hwnd);
+
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+
+			::Ellipse(hdc, start_x, start_y, start_x + 2 * radius, start_y + 2 * radius);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+
+			ReleaseDC(hwnd, hdc);
+		}
+
+		void info()const override
+		{
+			cout << typeid(*this).name() << endl;
+			cout << "Радиус круга: " << radius << endl;
+			Shape::info();
+		}
+	};
+
+	class Triangle :public Shape
+	{
+	public:
+		Triangle(Color color,int start_x,int start_y,int line_width):Shape(color,start_x,start_y,line_width){}
+		~Triangle(){}
+		virtual double get_height()const = 0;
+		void info()const
+		{
+
+			cout << "Выоста треугольника: " << get_height() << endl;
+		}
+	};
+	class EquliteralTriangle :public Triangle
+	{
+		double side;
+	public:
+		double get_side()const
+		{
+			return side;
+		}
+		void set_side(double side)
+		{
+			if (side < 50)side = 50;
+			if (side > 550)side = 550;
+			this-> side= side;
+		}
+	};
 }
 
-
-
-int main()
+void main()
 {
-	setlocale(LC_ALL, "RUS");
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD coord = {};
+	SetConsoleDisplayMode(hConsole, CONSOLE_FULLSCREEN_MODE, &coord);
 
-	Geometry::Square obj(10, Geometry::red);
-	
-	//delimetr;
-	//obj.info();
-	Geometry::Rectangle rect(5, 12, Geometry::yellow);
+	setlocale(LC_ALL, "");
+
+	Geometry::Square square(200, Geometry::Color::red, 300, 50, 5);
+	square.info();
+
+	Geometry::Rectangle rect(120, 75, Geometry::Color::blue, 550, 50, 8);
 	rect.info();
 
-
-
+	Geometry::Circle circle(100, Geometry::Color::yellow, 800, 50, 5);
+	circle.info();
 }
-
